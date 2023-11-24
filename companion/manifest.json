@@ -1,7 +1,7 @@
 {
-	"id": "your-module-name",
-	"name": "your-module-name",
-	"shortname": "module-shortname",
+	"id": "m5atom-sender",
+	"name": "m5atom-sender",
+	"shortname": "m5atom-sender",
 	"description": "A short one line description of your module",
 	"version": "0.0.0",
 	"license": "MIT",
@@ -20,7 +20,7 @@
 		"entrypoint": "../main.js"
 	},
 	"legacyIds": [],
-	"manufacturer": "Your company",
-	"products": ["Your product"],
+	"manufacturer": "HUMANOID",
+	"products": ["m5atom-sender"],
 	"keywords": []
 }

@@ -1,8 +1,8 @@
 const { InstanceBase, Regex, runEntrypoint, InstanceStatus } = require('@companion-module/base')
 const UpgradeScripts = require('./upgrades')
-const UpdateActions = require('./actions')
-const UpdateFeedbacks = require('./feedbacks')
 const UpdateVariableDefinitions = require('./variables')
+
+const MAX_CAM = 3;
 
 class ModuleInstance extends InstanceBase {
 	constructor(internal) {
@@ -15,7 +15,6 @@ class ModuleInstance extends InstanceBase {
 		this.updateStatus(InstanceStatus.Ok)
 
 		this.updateActions() // export actions
-		this.updateFeedbacks() // export feedbacks
 		this.updateVariableDefinitions() // export variable definitions
 	}
 	// When module gets deleted
@@ -29,34 +28,67 @@ class ModuleInstance extends InstanceBase {
 
 	// Return config fields for web config
 	getConfigFields() {
-		return [
+        var obj = [
+            {
+                type: 'static-text',
+                id: 'info',
+                width: 12,
+                label: 'Information',
+                value: "Provide 1 to 5 Tally m5atom-matrix node. Default port is 6969"
+            }
+        ];
+    
+        for(var i = 1; i <= MAX_CAM; i++){
+            obj.push({
+				type: 'textinput',
+				id: 'tallyip'+i,
+				label: 'Tally IP '+i,
+				width: 8
+			});
+            obj.push(
 			{
 				type: 'textinput',
-				id: 'host',
-				label: 'Target IP',
-				width: 8,
-				regex: Regex.IP,
-			},
-			{
-				type: 'textinput',
-				id: 'port',
-				label: 'Target Port',
+				id: 'tallyport'+i,
+				label: 'Tally Port '+i,
 				width: 4,
-				regex: Regex.PORT,
-			},
-		]
+                'default': 6969
+			});
+        }
+
+	    return obj;
 	}
 
 	updateActions() {
-		UpdateActions(this)
+        var array_options = [];
+        for(var i = 1; i <= MAX_CAM; i++){
+            array_options.push(
+                {
+                        id: 'cam'+i,
+                        type: 'dropdown',
+                        label: 'State for tally '+i,
+                        'default': 'UP',
+                        choices: [ {id: 'UP', label: 'UP'},{id: 'DOWN', label: 'DOWN'}]
+                }
+            );
+        }
+
+        this.setActionDefinitions({
+            tally_update_action: {
+                name: 'Update Tally State',
+                options: array_options,
+                callback: async (event) => {
+                    console.log('Hello world!', event.options)
+                },
+            },
+        });
 	}
 
 	updateFeedbacks() {
-		UpdateFeedbacks(this)
+		//UpdateFeedbacks(this)
 	}
 
 	updateVariableDefinitions() {
-		UpdateVariableDefinitions(this)
+		//UpdateVariableDefinitions(this)
 	}
 }
 
