@@ -112,7 +112,9 @@ void handleRoot() {
   if (tally_initialized == false){
     initialized = "Not Initialized. ";
   }
-
+  // reply
   server.send(200, "text/plain", initialized + "Hello from " + WiFi.localIP().toString() + ". State " + getStateString()+ ". Brightness "+ String(tally_brightness) + ". Color " + tally_color);
-}
 
+  // Redraw for change
+  // TODO
+}

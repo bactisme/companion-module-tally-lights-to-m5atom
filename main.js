@@ -5,7 +5,7 @@ const UpdateVariableDefinitions = require('./variables')
 const http = require('node:http');
 var querystring = require('querystring');
 
-const MAX_CAM = 3;
+const MAX_CAM = 6;
 
 class ModuleInstance extends InstanceBase {
 	constructor(internal) {
