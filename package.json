@@ -11,7 +11,8 @@
 		"url": "git+https://github.com/bactisme/humanoid-m5atom-tally-sender.git"
 	},
 	"dependencies": {
-		"@companion-module/base": "~1.5.1"
+		"@companion-module/base": "~1.5.1",
+		"querystring": "^0.2.1"
 	},
 	"devDependencies": {
 		"@companion-module/tools": "^1.4.1"
