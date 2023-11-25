@@ -15,9 +15,6 @@ class ModuleInstance extends InstanceBase {
 	async init(config) {
 		this.config = config;
 
-        this.current_color = null;
-        this.current_brightness = null;
-
 		this.updateStatus(InstanceStatus.Ok);
 
 		this.updateActions(); // export actions
@@ -39,7 +36,7 @@ class ModuleInstance extends InstanceBase {
            {
 				id: 'defaultbrightness',
 				type: 'number',
-				label: 'Default Brightness',
+				label: 'Default Brightness (when the module detect a not initialized tallly, it will send default values)',
                 width: 12,
                 'default': 100,
                 min: 1,
@@ -112,11 +109,7 @@ class ModuleInstance extends InstanceBase {
                     'default': 100
                 }],
                 callback: async (action, context) => {
-                    if (this.current_brightness == null){
-                        this.current_brightness = action.options['brightness'];
-                    }
-                    console.log("new brightness " + action.options['brightness'] );
-                    this.sendTallyBrightnessChange( this.current_brightness );
+                    this.sendTallyBrightnessChange( action.options['brightness'] );
                },
             },
             tally_change_color: {
@@ -128,17 +121,87 @@ class ModuleInstance extends InstanceBase {
                 }],
                 callback: async (action, context) => {
                     console.log("new color "+ action.options['color'] );
-                
+                    this.sendTallyColorChange( action.options['color'] );
                 }
             }
         });
 	}
 
+    /**
+     * Triggered when a device is detected as not initialized
+     */
+    async sendDefaultValues(tallyHostname){
+        try {
+            console.log("Init" + tallyHostname);
+            var qs = querystring.stringify({
+                init: 'true', // will trigger Initialized flag on device
+                brightness: this.config['defaultbrightness'],
+                color: this.config['defaultcolor']
+            });
+            const options = {
+                hostname: tallyHostname,
+                port: 80,
+                path: '/?'+qs,
+                method: 'GET',
+            };
+            const req = http.get(options, (res) => {
+                console.log('statusCode:', res.statusCode);
+            });
+        } catch(e) {
+            this.log('error', `http post request failed (${e.message})`)
+        }
+    }
+
+    /**
+     * Lofter Up and downs
+     */
+    async sendTallyCommand(action) {
+        for(var i = 1; i <= MAX_CAM; i++){
+            if (this.config['tallyip'+i] != "" && typeof(this.config['tallyip'+i]) != "undefined"){
+                var tallyhostname = this.config['tallyip'+i];
+                try {
+                    var new_state = action.options['cam'+i];
+                    if (new_state == "DONOTTOUCH"){
+                        continue;
+                    }
+                    var qs = querystring.stringify({
+                        state: new_state
+                    });
+                    const options = {
+                        hostname: this.config['tallyip'+i],
+                        port: 80,
+                        path: '/?'+qs,
+                        method: 'GET',
+                    };
+                    console.log(options);
+                    const req = http.get(options, (res) => {
+                        console.log('statusCode:', res.statusCode);
+                        res.on('data', (d) => {
+                            console.log(d.toString());
+                            // detect device as not initialized
+                            if (d.toString().indexOf("Not Initialized") !== -1){
+                                this.sendDefaultValues(tallyhostname);
+                            }
+                        });
+                    });
+
+                    this.updateStatus(InstanceStatus.Ok)
+                } catch (e) {
+                    this.log('error', `http post request failed (${e.message})`)
+                    this.updatestatus(instancestatus.unknownerror, e.code)
+                }
+            }
+        }
+    }
+
+    /**
+     * Loop on Tallys, change brightness
+     * @param {int} brightness
+     */
     async sendTallyBrightnessChange(brightness) {
         for(var i = 1; i <= MAX_CAM; i++){
             if (this.config['tallyip'+i] != "" && typeof(this.config['tallyip'+i]) != "undefined"){
                 try {
-                    // TODO OVERIDE DEFAULT BRIGHTNESS
                     var qs = querystring.stringify({
                         brightness: brightness
                     });
@@ -153,53 +216,46 @@ class ModuleInstance extends InstanceBase {
                         console.log('statusCode:', res.statusCode);
                     });
 
-                    this.updateStatus(InstanceStatus.Ok)                     
+                    this.updateStatus(InstanceStatus.Ok)
                 } catch (e) {
                     this.log('error', `http post request failed (${e.message})`)
                     this.updatestatus(instancestatus.unknownerror, e.code)
-                } 
+                }
             }
         }
         // end tally loop
     }
 
-
-    async sendTallyCommand(action) {
+    /**
+     * Loop on Tallys, change color
+     * @param {string} color
+     */
+    async sendTallyColorChange(color) {
         for(var i = 1; i <= MAX_CAM; i++){
             if (this.config['tallyip'+i] != "" && typeof(this.config['tallyip'+i]) != "undefined"){
-                var url = "http://"+this.config['tallyip'+i]+"/";
                 try {
-                    var new_state = action.options['cam'+i];
-                    if (new_state == "DONOTTOUCH"){
-                        continue;
-                    }
                     var qs = querystring.stringify({
-                        state: new_state, 
-                        brightness: this.current_brightness // always overide brightness, to use default one
+                        color: color
                     });
                     const options = {
                         hostname: this.config['tallyip'+i],
                         port: 80,
                         path: '/?'+qs,
-                        method: 'GET', 
+                        method: 'GET',
                     };
                     console.log(options);
                     const req = http.get(options, (res) => {
                         console.log('statusCode:', res.statusCode);
-                        /*console.log('headers:', res.headers);
-                      
-                        res.on('data', (d) => {
-                            console.log(d);
-                        }); */
                     });
 
                     this.updateStatus(InstanceStatus.Ok)
-                } catch (e) {
+                } catch (e) {
                     this.log('error', `http post request failed (${e.message})`)
                     this.updatestatus(instancestatus.unknownerror, e.code)
-                } 
+                }
             }
         }
+        // end tally loop
     }
 
 	updateFeedbacks() {
