@@ -2,8 +2,8 @@
 #include <WebServer.h>
 #include "M5Atom.h"
 
-#define STASSID "Humanoid"
-#define STAPSK "welcometo137"
+#define STASSID ""
+#define STAPSK ""
 
 const char* ssid = STASSID;
 const char* password = STAPSK;
@@ -124,10 +124,6 @@ void updateInternalState(){
     tally_mode = server.arg("color");
   }
 
-  String initialized = "";
-  if (tally_initialized == false){
-    initialized = "Not Initialized. ";
-  }
 }
 
 void handleRoot() {
@@ -139,5 +135,9 @@ void handleRoot() {
   redraw();
 
   // reply with state
+  String initialized = "";
+  if (tally_initialized == false){
+    initialized = "Not Initialized. ";
+  }
   server.send(200, "text/plain", initialized + "Hello from " + WiFi.localIP().toString() + ". State " + getStateString()+ ". Brightness "+ String(tally_brightness) + ". Color " + tally_color);
 }
