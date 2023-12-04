@@ -1,7 +1,7 @@
 # companion-module-tally-lights-to-m5atom
 
 m5atom is a incredibly inexpensive esp32 paired with a 5x5 NeoPixel matix.
-It's absolutely perfect to make tally lights.
+It's absolutely perfect to make inexpensive tally lights.
 
 Companion is the software to control Elgato stream deck.
 
@@ -11,8 +11,9 @@ This module provide two things:
 
 ## Usage
 
-First understand the layer concept.
-
+### Containers
+It allows complex setup were we can switch between view with one camera and view with multiple cameras. 
+If you have a split screen, each container will be responsible for the tally of one side.
 
 ## Setup 
 
