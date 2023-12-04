@@ -1,19 +1,14 @@
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
+#include <WiFi.h>
+#include <WebServer.h>
+#include "M5Atom.h"
 
-//#include <WiFi.h>
-//#include <WebServer.h>
-
-#ifndef STASSID
-#define STASSID "BNO Wifi"
-#define STAPSK "DustBunny"
-#endif
+#define STASSID "Humanoid"
+#define STAPSK "welcometo137"
 
 const char* ssid = STASSID;
 const char* password = STAPSK;
 
-ESP8266WebServer server(80); 
-//WebServer server(80);
+WebServer server(80); 
 
 void handleRoot(); // function prototypes for HTTP handlers
 
@@ -29,6 +24,11 @@ String tally_mode = "full";
 void setup() {
   Serial.begin(115200);
 
+  // M5 begin
+  M5.begin(true, false, true);
+  delay(50);
+  M5.dis.fillpix(0x000000);
+
   // We start by connecting to a WiFi network
 
   Serial.println();
@@ -41,7 +41,7 @@ void setup() {
      network-issues with your other WiFi-devices on your WiFi-network. */
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-  pinMode(BUILTIN_LED, OUTPUT);  // Initialize the LED_BUILTIN pin as an output
+  //pinMode(BUILTIN_LED, OUTPUT);  // Initialize the LED_BUILTIN pin as an output
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -56,7 +56,7 @@ void setup() {
   server.on("/", handleRoot);
   server.begin();
 
-  digitalWrite(BUILTIN_LED, HIGH);
+  //digitalWrite(BUILTIN_LED, HIGH);
 }
 
 void loop() {
@@ -71,8 +71,24 @@ String getStateString(){
   }
 } 
 
-void handleRoot() {
-  server.sendHeader("Access-Control-Allow-Origin", "*");
+void redraw(){
+  if (tally_mode == "full"){
+    if (tally_state == DOWN_STATE){
+      M5.dis.fillpix(0x000000);
+      M5.dis.setBrightness(0);
+    }else{
+      char charBuf[7]; // Buffer pour convertir la chaîne String en char array
+
+      tally_color.toCharArray(charBuf, 7); // Conversion de String en char array
+      unsigned long hexValue = strtoul(charBuf, NULL, 16); // Conversion de char array en valeur hexadécimale
+
+      M5.dis.setBrightness(tally_brightness);
+      M5.dis.fillpix(hexValue);
+    }
+  }
+}
+
+void updateInternalState(){
 
   // UP OR DOWN
   if (server.hasArg("state")){
@@ -112,9 +128,16 @@ void handleRoot() {
   if (tally_initialized == false){
     initialized = "Not Initialized. ";
   }
-  // reply
-  server.send(200, "text/plain", initialized + "Hello from " + WiFi.localIP().toString() + ". State " + getStateString()+ ". Brightness "+ String(tally_brightness) + ". Color " + tally_color);
+}
+
+void handleRoot() {
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+
+  updateInternalState();
 
   // Redraw for change
-  // TODO
+  redraw();
+
+  // reply with state
+  server.send(200, "text/plain", initialized + "Hello from " + WiFi.localIP().toString() + ". State " + getStateString()+ ". Brightness "+ String(tally_brightness) + ". Color " + tally_color);
 }

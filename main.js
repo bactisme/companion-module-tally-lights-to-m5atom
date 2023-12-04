@@ -34,9 +34,16 @@ class ModuleInstance extends InstanceBase {
 	getConfigFields() {
         var obj = [
            {
+                type: 'static-text',
+                id: 'info',
+                width: 12,
+                label: 'Default values',
+                value: "When the module detect a not initialized tallly, it will send default values"
+            },
+            {
 				id: 'defaultbrightness',
 				type: 'number',
-				label: 'Default Brightness (when the module detect a not initialized tallly, it will send default values)',
+				label: 'Default Brightness',
                 width: 12,
                 'default': 100,
                 min: 1,
@@ -54,7 +61,7 @@ class ModuleInstance extends InstanceBase {
                 id: 'info',
                 width: 12,
                 label: 'Information',
-                value: "Provide 3 to 5 Tally m5atom-matrix node."
+                value: "Provide IP for Tallys."
             }
         ];
     
