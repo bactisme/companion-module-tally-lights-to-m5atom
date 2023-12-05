@@ -37,8 +37,17 @@ In a split-screen scenario, each container controls the tally for one section.
         - In the Library Manager, add M5Atom library
         - In the code, look to Wifi setup line 5 and 6
         - Connect the M5atom, select the correct connection for the board, upload the code.
+        - Check the Serial Monitor to get the IP
 
-- Download this code in a directory
+- Download this code in a directory (as it is not yet a standard module)
     - Setup node > 18 with codepack on the computer
     - npm install to install library
     - Add the directory as source in companion
+
+- Setup the companion module and use actions
+
+![Capture d’écran 2023-12-05 à 17 22 54](https://github.com/bactisme/companion-module-tally-lights-to-m5atom/assets/369622/9edc2c08-47c2-4991-80c2-c9f62d1d5c17)
+
+![Capture d’écran 2023-12-05 à 17 23 28](https://github.com/bactisme/companion-module-tally-lights-to-m5atom/assets/369622/73280d6e-fbf7-4a25-b0c0-83978b674ce5)
+
+
