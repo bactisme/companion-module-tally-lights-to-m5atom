@@ -285,7 +285,7 @@ class ModuleInstance extends InstanceBase {
                 }
                 
                 // Could be more efficient in request, saving last state
-                console.log("Container "+action.options['container']+" Tally #"+i+" Send State = "+new_value);
+                console.log("Container " + action.options['container'] + " Tally #" + i + " Send State = " + value);
                 // TODO Parallel as it is time sensitive
                 this.sendNewState(tallyhostname, value);
             }
