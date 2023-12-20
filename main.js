@@ -200,9 +200,11 @@ class ModuleInstance extends InstanceBase {
             };
             const req = http.get(options, (res) => {
                 console.log('statusCode:', res.statusCode);
-            });
+            }).on("error",e => {
+                console.log("Error", e)
+            }).end();
         } catch(e) {
-            this.log('error', `http post request failed (${e.message})`)
+            this.log('Error', `http post request failed (${e.message})`)
         }
     }
 
@@ -227,12 +229,14 @@ class ModuleInstance extends InstanceBase {
                         this.sendDefaultValues(hostname);
                     }
                 });
-            });
+            }).on("error",e => {
+                console.log("Error", e);
+            }).end();
         
             this.updateStatus(InstanceStatus.Ok)
         } catch (e) {
             this.log('error', `http post request failed (${e.message})`)
-            this.updatestatus(instancestatus.unknownerror, e.code)
+            //this.updatestatus(instancestatus.unknownerror, e.code)
         }
     }
 
@@ -313,12 +317,14 @@ class ModuleInstance extends InstanceBase {
                     console.log(options);
                     const req = http.get(options, (res) => {
                         console.log('statusCode:', res.statusCode);
-                    });
+                    }).on("error",e => {
+                        console.log("Error", e);
+                    }).end();;
 
                     this.updateStatus(InstanceStatus.Ok)
                 } catch (e) {
                     this.log('error', `http post request failed (${e.message})`)
-                    this.updatestatus(instancestatus.unknownerror, e.code)
+                    //this.updatestatus(instancestatus.unknownerror, e.code)
                 }
             }
         }
@@ -345,7 +351,9 @@ class ModuleInstance extends InstanceBase {
                     console.log(options);
                     const req = http.get(options, (res) => {
                         console.log('statusCode:', res.statusCode);
-                    });
+                    }).on("error",e => {
+                        console.log("Error", e);
+                    }).end();
 
                     this.updateStatus(InstanceStatus.Ok)
                 } catch (e) {
