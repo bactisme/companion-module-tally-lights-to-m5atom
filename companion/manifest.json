@@ -1,16 +1,16 @@
 {
 	"id": "m5atom-sender",
 	"name": "m5atom-sender",
-	"shortname": "m5atom-sender",
-	"description": "A short one line description of your module",
+	"shortname": "TallySender",
+	"description": "Tally sender Humanoid",
 	"version": "0.0.0",
 	"license": "MIT",
-	"repository": "git+https://github.com/bitfocus/companion-module-your-module-name.git",
-	"bugs": "https://github.com/bitfocus/companion-module-your-module-name/issues",
+	"repository": "git+https://github.com/bactisme/companion-module-tally-lights-to-m5atom.git",
+	"bugs": "https://github.com/bactisme/companion-module-tally-lights-to-m5atom/issues",
 	"maintainers": [
 		{
-			"name": "Your name",
-			"email": "Your email"
+			"name": "Baptiste Michaud",
+			"email": "baptiste@humanoid.fr"
 		}
 	],
 	"runtime": {
